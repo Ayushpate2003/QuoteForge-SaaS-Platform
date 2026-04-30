@@ -1,0 +1,1 @@
+ALTER TABLE quotes ADD COLUMN pdf_url TEXT;

@@ -1,0 +1,88 @@
+# 🚀 QuoteForge: Detailed Development Plan
+
+QuoteForge is a professional, multi-firm GST quotation platform designed for Indian SMBs. This plan outlines the 10-phase roadmap to build the software from scratch using a modern full-stack architecture.
+
+## 🏗️ 1. Architecture Overview
+
+- **Monorepo Structure**: Separation of concerns between `apps/web` (Frontend) and `apps/api` (Backend).
+- **Frontend**: Next.js 14 (App Router) with Tailwind CSS and Shadcn UI.
+- **Backend**: Node.js + Express with TypeScript.
+- **Database/Auth/Storage**: Supabase (PostgreSQL, Supabase Auth, Storage Buckets).
+- **PDF Engine**: Puppeteer (Server-side) for pixel-perfect GST quotations.
+
+---
+
+## 📅 2. Phased Roadmap
+
+### Phase 0: Project Scaffolding & DB Setup (1 Day)
+- [x] Initialize monorepo with `apps/web` and `apps/api`.
+- [x] Configure Supabase project and local environment variables.
+- [x] Run initial migrations for `tenants`, `users`, `firms`, `items`, and `quotes`.
+- [x] Set up global error handlers and basic logging.
+
+### Phase 1: Authentication & RBAC (2 Days)
+- [x] **Admin Flow**: Self-registration with business name (creates tenant).
+- [x] **User Flow**: Invite-only system where Admins invite sales agents via email.
+- [x] **Middleware**: Implement route protection based on roles (`admin` vs `user`).
+- [x] **Auth Store**: Global state management for user sessions using Zustand.
+
+### Phase 2: Firm Management (2 Days)
+- [x] Create UI for managing multiple GST-registered firms.
+- [x] Implement branding asset uploads (Logo and Authorized Signature).
+- [x] Configure bank details and jurisdiction settings per firm.
+- [x] Add GSTIN and IFSC validation logic.
+
+### Phase 3: Item Master (1.5 Days)
+- [x] Build a searchable item catalogue for common products/services.
+- [x] Define tax presets (CGST, SGST, IGST) per item.
+- [x] Implement HSN/SAC code tracking.
+- [x] Create a tax calculation service to handle interstate vs. intrastate GST.
+
+### Phase 4: Quote Template Editor (3 Days)
+- [x] **WYSIWYG Editor**: Live preview panel for quote layouts.
+- [x] **Dynamic Columns**: Toggle visibility of columns (Condition, HSN, Taxable Amount).
+- [x] **Theme Controls**: Accent colors, font selection, and header/footer configuration.
+- [x] **Storage**: Store template configurations as JSONB in PostgreSQL.
+
+### Phase 5: Core Quote Flow (3 Days)
+- [x] **Multi-step Wizard**: Firm Selection → Customer Details → Item Selection → Preview.
+- [x] **Real-time Engine**: Calculate totals, taxes, and "Amount in Words" instantly.
+- [x] **Print System**: Browser-based print optimization (`@media print`).
+- [x] **History**: Save drafts and final quotations to the database.
+
+### Phase 6: Admin Oversight & User Control (2 Days)
+- [x] Global dashboard to view all quotes across all sales users.
+- [x] Quote editing and status management (Draft, Sent, Accepted).
+- [x] User access control (assign specific firms to specific sales agents).
+- [x] Audit logs for tracking changes to quotations.
+
+### Phase 7: Analytics & Reporting (1.5 Days)
+- [x] Sales charts (Total value, quote volume per month).
+- [x] Filterable reports by firm, user, or customer.
+- [x] Visual indicators for pending/draft quotes older than 3 days.
+
+### Phase 8: PDF & Print Polish (2 Days)
+- [x] Integrate **Puppeteer** for high-fidelity PDF generation.
+- [x] Cache generated PDFs in Supabase Storage.
+- [x] Polish typography and layout to match the professional 3Idea sample exactly.
+
+### Phase 9: Security & Production (1.5 Days)
+- [x] Implement API rate limiting and CSP headers.
+- [x] Final input sanitization and Zod schema validation.
+- [x] Deploy frontend to Vercel and backend to Railway/Render. (Configured)
+
+---
+
+## 📈 3. Success Metrics
+
+| Metric | Target |
+|--------|--------|
+| **Speed** | Quote creation in < 2 minutes |
+| **Performance** | Page load < 2.5s |
+| **Fidelity** | 100% match to sample print layout |
+| **Security** | Zero cross-tenant data leakage |
+
+---
+
+## 🛠️ 4. Ready to Start?
+I recommend beginning with **Phase 0** to set up the infrastructure. Should I start generating the monorepo structure and database migrations?

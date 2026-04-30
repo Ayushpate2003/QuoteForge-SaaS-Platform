@@ -1,0 +1,11 @@
+{
+  "name": "quoteforge-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix apps/api && npm install --prefix apps/web",
+    "dev:api": "npm run dev --prefix apps/api",
+    "dev:web": "npm run dev --prefix apps/web",
+    "dev": "npx concurrently \"npm run dev:api\" \"npm run dev:web\""
+  }
+}

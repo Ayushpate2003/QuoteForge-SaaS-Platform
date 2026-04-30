@@ -1,0 +1,47 @@
+services:
+  # Backend API
+  - type: web
+    name: quoteforge-api
+    env: docker
+    dockerContext: ./apps/api
+    dockerFilePath: ./apps/api/Dockerfile
+    plan: starter
+    region: singapore # or user's preferred region
+    envVars:
+      - key: PORT
+        value: 4000
+      - key: NODE_ENV
+        value: production
+      - fromGroup: quoteforge-secrets
+
+  # Frontend Web
+  - type: web
+    name: quoteforge-web
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    publishDir: ./apps/web/.next
+    staticPublishNumFiles: 1000
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        fromGroup: quoteforge-secrets
+        fromKey: SUPABASE_URL
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        fromGroup: quoteforge-secrets
+        fromKey: SUPABASE_ANON_KEY
+      - key: NEXT_PUBLIC_API_URL
+        fromGroup: quoteforge-secrets
+        fromKey: BACKEND_URL
+      - fromGroup: quoteforge-secrets
+
+envVarGroups:
+  - name: quoteforge-secrets
+    envVars:
+      - key: SUPABASE_URL
+      - key: SUPABASE_ANON_KEY
+      - key: SUPABASE_SERVICE_ROLE_KEY
+      - key: FRONTEND_URL
+      - key: BACKEND_URL
+      - key: RESEND_API_KEY
