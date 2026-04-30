@@ -242,7 +242,42 @@ export const generateQuotePdf = async (req: AuthRequest, res: Response) => {
       .eq('id', id);
 
     res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename=Quotation_${quote.quote_number.replace(/\//g, '_')}.pdf`);
+    res.setHeader('Content-Disposition', `attachment; filename="Quote-${quote.quote_number.replace(/\//g, '_')}.pdf"`);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    return res.send(pdfBuffer);
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const generatePreviewQuotePdf = async (req: AuthRequest, res: Response) => {
+  const draftQuote = req.body;
+
+  try {
+    const { data: firm, error: firmError } = await supabase
+      .from('firms')
+      .select('*')
+      .eq('id', draftQuote.firm_id)
+      .single();
+    if (firmError || !firm) return res.status(404).json({ error: 'Firm not found' });
+
+    const { data: template } = await supabase
+      .from('templates')
+      .select('*')
+      .eq('id', draftQuote.template_id)
+      .single();
+
+    const quoteForPdf = {
+      ...draftQuote,
+      quote_number: 'DRAFT',
+      firms: firm,
+      templates: template || null,
+    };
+
+    const pdfBuffer = await PdfService.generateQuotePdf(quoteForPdf);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'attachment; filename="Quote-preview.pdf"');
+    res.setHeader('Content-Length', pdfBuffer.length);
     return res.send(pdfBuffer);
   } catch (error: any) {
     return res.status(500).json({ error: error.message });

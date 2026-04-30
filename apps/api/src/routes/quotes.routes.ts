@@ -8,6 +8,7 @@ const router = Router();
 
 router.get('/', authenticate, quotesController.getQuotes);
 router.post('/', authenticate, validate(quoteSchema), quotesController.createQuote);
+router.post('/preview-pdf', authenticate, quotesController.generatePreviewQuotePdf);
 router.get('/:id', authenticate, quotesController.getQuoteById);
 router.patch('/:id/status', authenticate, validate(updateStatusSchema), quotesController.updateQuoteStatus);
 router.get('/:id/pdf', authenticate, quotesController.generateQuotePdf);

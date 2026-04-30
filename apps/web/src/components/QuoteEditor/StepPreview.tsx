@@ -3,7 +3,6 @@ import { QuotationDocument } from '@/components/Shared/QuotationDocument';
 import { supabase } from '@/lib/supabase';
 import { Loader2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { generatePDF } from '@/lib/pdf';
 
 interface StepPreviewProps {
   data: any;
@@ -87,9 +86,33 @@ export const StepPreview: React.FC<StepPreviewProps> = ({ data }) => {
   const handleDownload = async () => {
     setDownloading(true);
     try {
-      await generatePDF('quotation-document', `Quotation_${new Date().getTime()}`);
+      const session = (await supabase.auth.getSession()).data.session;
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/quotes/preview-pdf`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText || 'Failed to generate PDF preview');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `Quotation_${Date.now()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
     } catch (err) {
-      alert('Error generating PDF');
+      console.error(err);
+      alert('Error generating PDF preview');
     } finally {
       setDownloading(false);
     }
